@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     client_id: str
     client_secret: str
     webhook_url: str
+    group_csv: str
 
     class Config:
         env_file = find_dotenv()

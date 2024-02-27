@@ -76,6 +76,8 @@ class GiteeBot(object):
     def get_repo_info(self, owner: str, repo: str) -> Repo:
         """获取仓库的信息"""
 
+        print("Start getting repo info: {owner}/{repo}".format(owner=owner, repo=repo))
+
         contributors = self.get_repo_contributors(owner, repo)
         _repo = Repo(
             issues_count=self.get_repo_item_count(owner, repo, "issues"),
@@ -84,6 +86,8 @@ class GiteeBot(object):
             contributors_count=len(contributors),
             contributors=contributors,
         )
+
+        print("Finish getting repo info: {owner}/{repo}".format(owner=owner, repo=repo))
 
         return _repo
 
