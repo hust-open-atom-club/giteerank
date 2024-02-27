@@ -18,7 +18,7 @@ class Repo(BaseModel):
     issues_count: int = 0
     prs_count: int = 0
     commits_count: int = 0
-    cotributors_count: int = 0
+    contributors_count: int = 0
 
     contributors: list[Contributor] = []
 

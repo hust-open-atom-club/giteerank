@@ -81,8 +81,10 @@ class GiteeBot(object):
         contributors = self.get_repo_contributors(owner, repo)
         _repo = Repo(
             issues_count=self.get_repo_item_count(owner, repo, "issues"),
-            prs_count=self.get_repo_prs_count(owner, repo),
-            commits_count=self.get_repo_item_count(owner, repo, "commits"),
+            prs_count=self.get_repo_item_count(owner, repo, "pulls", {"state": "all"}),
+            commits_count=self.get_repo_item_count(
+                owner, repo, "commits", {"since": "20240227"}
+            ),
             contributors_count=len(contributors),
             contributors=contributors,
         )
@@ -120,7 +122,9 @@ class GiteeBot(object):
 
         return pr_count
 
-    def get_repo_item_count(self, owner: str, repo: str, item: str) -> int:
+    def get_repo_item_count(
+        self, owner: str, repo: str, item: str, params: dict = {}
+    ) -> int:
         """获取仓库的某项数量"""
 
         if item not in ["issues", "pulls", "contributors", "commits"]:
@@ -139,7 +143,7 @@ class GiteeBot(object):
                     params={
                         "page": item_count // 30 + 1,
                         "per_page": 30,
-                    },
+                    }.update(params),
                 )
 
             if res.status_code != 200:
@@ -152,6 +156,7 @@ class GiteeBot(object):
             if len(items) < 30:
                 break
 
+        print(f"Get {item} count: {item_count} for {owner}/{repo}")
         return item_count
 
     def get_repo_contributors(self, owner: str, repo: str) -> list[Contributor]:

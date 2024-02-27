@@ -82,7 +82,7 @@ group_element_template = """{{
       "elements": [
         {{
           "tag": "markdown",
-          "content": "**<font color='red'>{prs_count}</font>**\\n<font color='grey'>Open PRs</font>\\n**<font color='red'>{contributors_count}</font>**\\n<font color='grey'>Contibutors</font>",
+          "content": "**<font color='red'>{prs_count}</font>**\\n<font color='grey'>Open PRs</font>\\n**<font color='red'>{contributors_count}</font>**\\n<font color='grey'>Contributors</font>",
           "text_align": "center"
         }}
       ]
@@ -132,7 +132,7 @@ def build_card(group_list: list[Group], bot: GiteeBot) -> dict | list:
             commits_count=repo_info.commits_count,
             issues_count=repo_info.issues_count,
             prs_count=repo_info.prs_count,
-            contributors_count=repo_info.cotributors_count,
+            contributors_count=repo_info.contributors_count,
             contributors="\\n".join(
                 [
                     f"{contributor.email}"
