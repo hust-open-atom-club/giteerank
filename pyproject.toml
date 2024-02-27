@@ -1,0 +1,25 @@
+[project]
+name = "gitee-ranking"
+version = "0.0.1"
+description = "Gitee Rankng"
+authors = [
+    {name = "jingfelix", email = "jingfelix@outlook.com"},
+]
+dependencies = [
+    "httpx>=0.27.0",
+    "python-dotenv>=1.0.1",
+    "rich>=13.7.0",
+    "pydantic>=2.6.2",
+    "pydantic-settings>=2.2.1",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
