@@ -17,6 +17,9 @@ requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
 
+[project.scripts]
+giteerank = "gitee_ranking.__init__:app"
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"

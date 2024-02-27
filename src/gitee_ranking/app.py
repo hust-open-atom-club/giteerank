@@ -14,22 +14,42 @@ bot = GiteeBot(
     client_secret=settings.client_secret,
 )
 
-with open(settings.group_csv, "r") as f:
-    group_list = [
-        Group(
-            name=line.split(",")[0],
-            owner=line.split(",")[1],
-            repo=line.split(",")[2],
-            url=line.split(",")[3],
-        )
-        for line in f.readlines()
-    ]
+file_list = settings.groups_str.split(",")
 
 
 def run_bot():
+    current_hour = time.localtime().tm_hour
+    if (
+        current_hour >= settings.start_hour
+        and current_hour < settings.start_hour + len(file_list) * 2
+    ):
+        group_list = []
+        with open(
+            file_list[(current_hour - settings.start_hour) // len(file_list)], "r"
+        ) as f:
+            group_list.extend(
+                [
+                    Group(
+                        name=line.split(",")[0],
+                        owner=line.split(",")[1],
+                        repo=line.split(",")[2],
+                        url=line.split(",")[3],
+                    )
+                    for line in f.readlines()
+                ]
+            )
+    else:
+        print(
+            "Not in the time range. Current time: {}".format(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            )
+        )
+        return
+
     print(
         "Running bot at {}".format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     )
+
     card = build_card(group_list, bot)
     push_webhook(settings.webhook_url, card)
     print(
@@ -40,7 +60,8 @@ def run_bot():
 
 
 def app():
-    schedule.every().day.at("20:00").do(run_bot)
+    print("Starting bot")
+    schedule.every().hour.do(run_bot)
     schedule.run_all()
     while True:
         schedule.run_pending()

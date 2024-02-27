@@ -83,7 +83,7 @@ class GiteeBot(object):
             issues_count=self.get_repo_item_count(owner, repo, "issues"),
             prs_count=self.get_repo_item_count(owner, repo, "pulls", {"state": "all"}),
             commits_count=self.get_repo_item_count(
-                owner, repo, "commits", {"since": "20240227"}
+                owner, repo, "commits", {"since": "2024-02-27"}
             ),
             contributors_count=len(contributors),
             contributors=contributors,
@@ -137,13 +137,15 @@ class GiteeBot(object):
         item_count = 0
         while True:
             with httpx.Client() as client:
+                _params = {
+                    "page": item_count // 30 + 1,
+                    "per_page": 30,
+                }
+                _params.update(params)
                 res = client.get(
                     f"https://gitee.com/api/v5/repos/{owner}/{repo}/{item}",
                     headers={"Authorization": f"Bearer {self.access_token}"},
-                    params={
-                        "page": item_count // 30 + 1,
-                        "per_page": 30,
-                    }.update(params),
+                    params=_params,
                 )
 
             if res.status_code != 200:

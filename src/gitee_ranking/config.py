@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     client_id: str
     client_secret: str
     webhook_url: str
-    group_csv: str
+    groups_str: str
+    start_hour: int = 9
 
     class Config:
         env_file = find_dotenv()
