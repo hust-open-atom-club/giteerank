@@ -132,7 +132,13 @@ def build_card(group_list: list[Group], bot: GiteeBot) -> dict | list:
             commits_count=repo_info.commits_count,
             issues_count=repo_info.issues_count,
             prs_count=repo_info.prs_count,
-            contributors_count=repo_info.contributors_count,
+            contributors_count=len(
+                [
+                    contributor
+                    for contributor in repo_info.contributors
+                    if (contributor.email).endswith("@hust.edu.cn")
+                ]
+            ),
             contributors="\\n".join(
                 [
                     f"{contributor.email}"

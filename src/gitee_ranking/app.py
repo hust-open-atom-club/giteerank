@@ -25,7 +25,7 @@ def run_bot():
     ):
         group_list = []
         with open(
-            file_list[(current_hour - settings.start_hour) // len(file_list)], "r"
+            file_list[(current_hour - settings.start_hour) % len(file_list)], "r"
         ) as f:
             group_list.extend(
                 [
