@@ -158,7 +158,7 @@ class GiteeBot(object):
             if len(items) < 30:
                 break
 
-        print(f"Get {item} count: {item_count} for {owner}/{repo}")
+        # rich.print(f"Get {item} count: {item_count} for {owner}/{repo}")
         return item_count
 
     def get_repo_contributors(self, owner: str, repo: str) -> list[Contributor]:

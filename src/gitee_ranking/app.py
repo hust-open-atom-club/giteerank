@@ -38,6 +38,25 @@ def run_bot():
                     for line in f.readlines()
                 ]
             )
+    elif (
+        current_hour == settings.start_hour + len(file_list) * 2
+        or current_hour == settings.start_hour - 1
+    ):
+        group_list = []
+        for file in file_list:
+            with open(file, "r") as f:
+                group_list.extend(
+                    [
+                        Group(
+                            name=line.split(",")[0],
+                            owner=line.split(",")[1],
+                            repo=line.split(",")[2],
+                            url=line.split(",")[3],
+                        )
+                        for line in f.readlines()
+                    ]
+                )
+
     else:
         print(
             "Not in the time range. Current time: {}".format(
@@ -61,6 +80,7 @@ def run_bot():
 
 def app():
     print("Starting bot")
+    print("Webhook url: {}".format(settings.webhook_url))
     schedule.every().hour.do(run_bot)
     schedule.run_all()
     while True:

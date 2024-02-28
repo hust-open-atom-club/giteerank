@@ -54,7 +54,7 @@ card_template = """{{
 
 group_element_template = """{{
   "tag": "markdown",
-  "content": "[{owner}/{repo}]({repo_url}) **| Group {group_name}**"
+  "content": "**Group {group_name} | **[{owner}/{repo}]({repo_url})"
 }},
 {{
   "tag": "column_set",
