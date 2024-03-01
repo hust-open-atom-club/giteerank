@@ -43,6 +43,7 @@ class GiteeBot(object):
                     "client_secret": self.client_secret,
                     "scope": "user_info",
                 },
+                timeout=100,
             )
         except Exception as e:
             rich.print(e)
@@ -62,6 +63,7 @@ class GiteeBot(object):
                     "grant_type": "refresh_token",
                     "refresh_token": self.refresh_token,
                 },
+                timeout=100,
             )
         except Exception as e:
             rich.print(e)
@@ -93,35 +95,6 @@ class GiteeBot(object):
 
         return _repo
 
-    def get_repo_prs_count(self, owner: str, repo: str) -> int:
-        """获取仓库的 PR 数量"""
-
-        # 注意分页
-        pr_count = 0
-        while True:
-            with httpx.Client() as client:
-                res = client.get(
-                    f"https://gitee.com/api/v5/repos/{owner}/{repo}/pulls",
-                    headers={"Authorization": f"Bearer {self.access_token}"},
-                    params={
-                        "state": "all",
-                        "page": pr_count // 30 + 1,
-                        "per_page": 30,
-                    },
-                )
-
-            if res.status_code != 200:
-                rich.print(res.json())
-                return 0
-
-            prs = res.json()
-            pr_count += len(prs)
-
-            if len(prs) < 30:
-                break
-
-        return pr_count
-
     def get_repo_item_count(
         self, owner: str, repo: str, item: str, params: dict = {}
     ) -> int:
@@ -136,17 +109,21 @@ class GiteeBot(object):
         # 注意分页
         item_count = 0
         while True:
-            with httpx.Client() as client:
+            try:
                 _params = {
                     "page": item_count // 30 + 1,
                     "per_page": 30,
                 }
                 _params.update(params)
-                res = client.get(
+                res = httpx.get(
                     f"https://gitee.com/api/v5/repos/{owner}/{repo}/{item}",
                     headers={"Authorization": f"Bearer {self.access_token}"},
                     params=_params,
+                    timeout=100,
                 )
+            except Exception as e:
+                rich.print(e)
+                return 0
 
             if res.status_code != 200:
                 rich.print(res.json())
@@ -165,11 +142,15 @@ class GiteeBot(object):
         """获取仓库的贡献者"""
 
         contributors = []
-        with httpx.Client() as client:
-            res = client.get(
+        try:
+            res = httpx.get(
                 f"https://gitee.com/api/v5/repos/{owner}/{repo}/contributors",
                 headers={"Authorization": f"Bearer {self.access_token}"},
+                timeout=100,
             )
+        except Exception as e:
+            rich.print(e)
+            return []
 
         if res.status_code != 200:
             rich.print(res.json())

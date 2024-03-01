@@ -106,7 +106,9 @@ group_element_template = """{{
 
 def push_webhook(webhook_url: str, card: list | dict) -> None:
     """推送消息到 webhook"""
-    with httpx.Client() as client:
+    with httpx.Client(
+        timeout=100,
+    ) as client:
         res = client.post(webhook_url, json={"msg_type": "interactive", "card": card})
 
     if res.status_code != 200:
