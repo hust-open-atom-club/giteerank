@@ -157,6 +157,7 @@ class GiteeBot(object):
             return []
 
         for item in res.json():
-            contributors.append(Contributor(email=item.get("email", "")))
+            new_contributor = Contributor(email=item.get("email", ""))
+            contributors.append(new_contributor)
 
         return contributors

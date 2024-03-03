@@ -45,7 +45,7 @@ card_template = """{{
   "header": {{
     "template": "orange",
     "title": {{
-      "content": "{date} HustDetour",
+      "content": "{date} HustDetour {title}",
       "tag": "plain_text"
     }}
   }}
@@ -54,7 +54,7 @@ card_template = """{{
 
 group_element_template = """{{
   "tag": "markdown",
-  "content": "**Group {group_name} | **[{owner}/{repo}]({repo_url})"
+  "content": "**Group {group_name} | {class_name} | **[{owner}/{repo}]({repo_url})"
 }},
 {{
   "tag": "column_set",
@@ -121,38 +121,59 @@ def push_webhook(webhook_url: str, card: list | dict) -> None:
         raise Exception(f"Failed to push webhook: {res.text}")
 
 
-def build_card(group_list: list[Group], bot: GiteeBot) -> dict | list:
+# NOTE: 修改后的 group_list 是从数据库中读取出来的
+def build_card(title: str, group_list: list[Group], bot: GiteeBot) -> dict | list:
     """构建卡片"""
     group_cards = ""
     for group in group_list:
         repo_info = bot.get_repo_info(group.owner, group.repo)
+
+        contributors: list[str] = []
+
+        black_list = [
+            "noreply@github.com",
+            "dtarditi@microsoft.com",
+            "b.gianfo@gmail.com",
+            "aukinros@microsoft.com",
+            "jaykrell@ntdev.microsoft.com",
+            "noreply@gitee.com",
+            "bgianf@microsoft.com",
+            "ofekshilon@gmail.com",
+            "galenh@microsoft.com",
+        ]
+
+        # 这里的 contributor 只有 email
+        email_list = [((author.email).strip()).lower() for author in group.authors]
+        contributor_name_list = [author.name for author in group.authors]
+        for contributor in repo_info.contributors:
+            if contributor.email in black_list:
+                continue
+
+            if contributor.email in email_list:
+                contributors.insert(
+                    0, contributor_name_list[email_list.index(contributor.email)]
+                )
+                continue
+
+            contributors.append(contributor.email)
+
         group_cards += group_element_template.format(
             owner=group.owner,
             repo=group.repo,
             repo_url=group.url,
             group_name=group.name,
+            class_name=group.class_name,
             commits_count=repo_info.commits_count,
             issues_count=repo_info.issues_count,
             prs_count=repo_info.prs_count,
-            contributors_count=len(
-                [
-                    contributor
-                    for contributor in repo_info.contributors
-                    if (contributor.email).endswith("@hust.edu.cn")
-                ]
-            ),
-            contributors="\\n".join(
-                [
-                    f"{contributor.email}"
-                    for contributor in repo_info.contributors
-                    if (contributor.email).endswith("@hust.edu.cn")
-                ]
-            ),
+            contributors_count=len(contributors),
+            contributors="\\n".join(contributors),
         )
 
     group_cards = group_cards[:-1]  # 去除最后一个逗号
 
     _card = card_template.format(
+        title=title,
         group_cards=group_cards,
         date=time.strftime("%Y-%m-%d", time.localtime()),
     )

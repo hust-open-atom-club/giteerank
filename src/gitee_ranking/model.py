@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -11,6 +13,7 @@ class Token(BaseModel):
 
 
 class Contributor(BaseModel):
+    name: Optional[str] = None
     email: str
 
 
@@ -28,3 +31,7 @@ class Group(BaseModel):
     owner: str
     repo: str
     url: str
+
+    class_name: Optional[str] = None
+
+    authors: list[Contributor] = []

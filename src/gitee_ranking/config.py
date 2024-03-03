@@ -15,8 +15,10 @@ class Settings(BaseSettings):
     client_id: str
     client_secret: str
     webhook_url: str
-    groups_str: str
     start_hour: int = 9
+    end_hour: int = 19
+
+    sqlalchemy_database_uri: str = "sqlite:///./gitee_ranking.db"
 
     class Config:
         env_file = find_dotenv()
