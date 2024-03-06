@@ -3,7 +3,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 from gitee_ranking.config import settings
 
-engine = create_engine(settings.sqlalchemy_database_uri, echo=False)
+engine = create_engine(settings.sqlalchemy_database_uri, echo=False, pool_recycle=3600)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
